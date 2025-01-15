@@ -1,0 +1,86 @@
+name: snapper
+
+type: charm
+
+title: Snapper
+
+summary: Charmed snap package manager.
+
+description: |
+  This subordinate charm streamlines the deployment of multiple Juju charms by
+  reading a YAML styled configuration.
+
+  It acts as an orchestrator, automating the installation and configuration of
+  a set of snaps in a certain machine.
+
+  The YAML styled config provides a centralized definition of the snaps to be
+  installed, the channels to be used, the confinements and the configuration
+  options to be set.
+
+  This charm is particularly beneficial for developers working with complex deployments
+  involving multiple snaps. It reduces manual effort, improves maintainability, and 
+  romotes consistency in deploying and configuring snaps within a Juju environment.
+
+bases:
+- build-on:
+  - name: ubuntu
+    channel: "22.04"
+  run-on:
+  - name: ubuntu
+    channel: "22.04"
+
+subordinate: true
+
+requires:
+  juju-info:
+    interface: juju-info
+    scope: container
+
+config:
+  options:
+    snaps:
+      description: |
+        A YAML styled configuration that defines the snaps to be installed,
+        the channels to be used, the confinements and the configuration options to be set.
+
+        Example:
+
+        ```yaml
+        snaps:
+          - name: lxd
+            channel: stable
+            confinement: strict
+            config: {}
+          - name: helm
+            channel: stable
+            confinement: strict
+        ```
+
+        The `config` key is optional and can be used to set configuration options for the snap.
+      type: string
+      default: |
+        snaps: []
+
+build-packages: [ cargo, rustc, pkg-config, libffi-dev, libssl-dev ]
+
+# actions:
+#   run-snap-service:
+#     description: Run a snap service.
+#     parallel: true
+#     params:
+#       snap-name:
+#         description: The name of the snap.
+#         type: string
+#       service-name:
+#         description: The name of the service.
+#         type: string
+#   stop-snap-service:
+#     description: Stop a snap service.
+#     parallel: true
+#     params:
+#       snap-name:
+#         description: The name of the snap.
+#         type: string
+#       service-name:
+#         description: The name of the service.
+#         type: string
